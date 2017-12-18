@@ -9,7 +9,6 @@
  * Bridge structure: http://sitescan.net/wp-content/uploads/2017/05/GoldenGateV1.jpg 
  * Bridge towers: https://i.pinimg.com/736x/7e/96/68/7e9668e32fe261783d963d9c5a2635d7--bridge-structure-technical-drawings.jpg
  *
- * TO DO: fix the cable curves (at edges of top of tower)
  * TO DO: view from inside the car?
  */
 
@@ -187,60 +186,59 @@ function createGoldenGate(dimensions) {
 			middleMesh.position.z = side * dims.bridge.width/2; 
 			cables.add(middleMesh);
 
-			// Left portion
-			var leftCurve = new THREE.CubicBezierCurve3(
-				new THREE.Vector3(-dims.bridge.main_span/2, dims.tower.height + dims.tower.base, 0),
-				new THREE.Vector3(-dims.bridge.main_span/2*1.05, dims.tower.height*0.95, 0), // arbitrary curve
-				new THREE.Vector3(-dims.bridge.total_span/2*0.95, dims.bridge.clearance*1.05, 0), // arbitrary curve
-				new THREE.Vector3(-dims.bridge.total_span/2, dims.bridge.clearance, 0)
-			);
-			var leftGeom = new THREE.TubeGeometry(leftCurve, 128, dims.cable.fat, 64);
-			var leftMesh = new THREE.Mesh(leftGeom, cableMat);
-			leftMesh.position.z = side * dims.bridge.width/2; 
-			cables.add(leftMesh);
-
-			// Right portion
-			var rightCurve = new THREE.CubicBezierCurve3(
-				new THREE.Vector3(dims.bridge.main_span/2, dims.tower.height + dims.tower.base, 0),
-				new THREE.Vector3(dims.bridge.main_span/2*1.05, dims.tower.height*0.95, 0), // arbitrary curve
-				new THREE.Vector3(dims.bridge.total_span/2*0.95, dims.bridge.clearance*1.05, 0), // arbitrary curve
-				new THREE.Vector3(dims.bridge.total_span/2, dims.bridge.clearance, 0)
-			);
-			var rightGeom = new THREE.TubeGeometry(rightCurve, 128, dims.cable.fat, 64);
-			var rightMesh = new THREE.Mesh(rightGeom, cableMat);
-			rightMesh.position.z = side * dims.bridge.width/2; 
-			cables.add(rightMesh);
+			// Left and right side.
+			for (var s = -1; s <= 1; s += 2) {
+				var curve = new THREE.CubicBezierCurve3(
+					new THREE.Vector3(s*dims.bridge.main_span/2, dims.tower.height + dims.tower.base, 0),
+					new THREE.Vector3(s*dims.bridge.main_span/2*1.05, dims.tower.height*0.95, 0), // arbitrary curve
+					new THREE.Vector3(s*dims.bridge.total_span/2*0.95, dims.bridge.clearance*1.05, 0), // arbitrary curve
+					new THREE.Vector3(s*dims.bridge.total_span/2, dims.bridge.clearance, 0)
+				);
+				var geom = new THREE.TubeGeometry(curve, 128, dims.cable.fat, 64);
+				var mesh = new THREE.Mesh(geom, cableMat);
+				mesh.position.z = side * dims.bridge.width/2; 
+				cables.add(mesh);
+			}
 		}
 
 		// Thin vertical cables.
 		for (var side = -1; side <= 1; side += 2) {
-			var verticalCables = new THREE.Object3D();
+			// Create a "bounding" area that the vertical cables must fit within (using an ExtrudeGeometry).
+			var areaShape = new THREE.Shape();
+			areaShape.moveTo(-dims.bridge.total_span/2, dims.bridge.clearance);
+			areaShape.bezierCurveTo( // Left curve
+				-dims.bridge.total_span/2*0.95, dims.bridge.clearance*1.05,
+				-dims.bridge.main_span/2*1.05, dims.tower.height*0.95,
+				-dims.bridge.main_span/2, dims.tower.height + dims.tower.base)
+			areaShape.bezierCurveTo( // Middle curve
+				0, dims.bridge.clearance, 
+				0, dims.bridge.clearance, 
+				+dims.bridge.main_span/2, dims.tower.height + dims.tower.base);
+			areaShape.bezierCurveTo( // Right curve
+				+dims.bridge.main_span/2*1.05, dims.tower.height*0.95, 
+				+dims.bridge.total_span/2*0.95, dims.bridge.clearance*1.05,
+				+dims.bridge.total_span/2, dims.bridge.clearance);
 
-			// Uniform vertical cables
+			var thickness = dims.bridge.width + 2*dims.cable.thin;
+			var area = new THREE.ExtrudeGeometry(areaShape, {amount: thickness, bevelEnabled: false});
+			area.translate(0, 0, -thickness/2);
+
+			// Add a bunch of vertical cables across the length of the bridge of uniform height (to be "trimmed" off).
+			var verticalCables = new THREE.Geometry();
 			for (var i = 0; i < dims.cable.number; i++) {
 				var height = dims.tower.height - dims.bridge.clearance;
-				var geom = new THREE.CylinderGeometry(dims.cable.thin, dims.cable.thin, height);
-				var mesh = new THREE.Mesh(geom, cableMat);
-				mesh.position.x = i * dims.bridge.total_span/dims.cable.number;
-				mesh.position.y = height/2 + dims.bridge.clearance;
-				mesh.position.z = side * dims.bridge.width/2;
-				verticalCables.add(mesh);
+				var cable = new THREE.CylinderGeometry(dims.cable.thin, dims.cable.thin, height);
+				cable.translate(i * dims.bridge.total_span/dims.cable.number - dims.bridge.total_span/2,
+					height/2 + dims.bridge.clearance,
+					side * dims.bridge.width/2);
+				verticalCables.merge(cable);
 			}
-			verticalCables.position.x = -dims.bridge.total_span/2;
-			cables.add(verticalCables);
 
-			// Middle cutout
-			var middleShape = new THREE.Shape();
-			middleShape.moveTo(-dims.bridge.main_span/2, dims.tower.height + dims.tower.base);
-			middleShape.bezierCurveTo(0, dims.bridge.clearance, 
-									  0, dims.bridge.clearance, 
-									  +dims.bridge.main_span/2, dims.tower.height + dims.tower.base);
-			var thickness = dims.bridge.width + 2*dims.cable.thin;
-			var middleGeom = new THREE.ExtrudeGeometry(middleShape, {amount: thickness, bevelEnabled: false});
-			var middleMesh = new THREE.Mesh(middleGeom, devMat);
-			middleMesh.position.z = -thickness/2;
-			
-			cables.add(middleMesh);
+			// Use ThreeBSP and csg.js to "trim" the tops of cables using intersection.
+			area = new ThreeBSP(area);
+			verticalCables = new ThreeBSP(verticalCables);
+			var mesh = area.intersect(verticalCables).toMesh(cableMat);
+			cables.add(mesh);
 		}
 
 		return cables;
