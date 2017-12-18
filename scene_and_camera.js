@@ -36,7 +36,7 @@ function createScene() {
       bar: 10 
     }, 
     cable: {
-      fat: 1, thin: 1/2 
+      fat: 1, thin: 1/2, number: 50
     }
   };
 
@@ -45,8 +45,8 @@ function createScene() {
   scene.add(bridge);
 
   // Add vehicles driving across the bridge.
-  var vehicles = createVehicles();
-  animateDriving(scene, vehicles);
+  // var vehicles = createVehicles();
+  // animateDriving(scene, vehicles);
 
   // Add white ambient light.
   var ambientLight = new THREE.AmbientLight(TW.WHITE, 0.7);

@@ -18,6 +18,7 @@ var bridgeMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSid
 var cableMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSide});
 var landMat = new THREE.MeshPhongMaterial({color: "#7ebc74", side: THREE.DoubleSide});
 var waterMat = new THREE.MeshPhongMaterial({color: "cyan", transparent: true, opacity: 0.5});
+var devMat = new THREE.MeshPhongMaterial({color: "yellow", side: THREE.DoubleSide});
 
 /* Origin: below the center of the bridge, at water level. */
 function createGoldenGate(dimensions) {
@@ -52,7 +53,8 @@ function createGoldenGate(dimensions) {
 			}, 
 			cable: {
 				fat: 0.92, // radius of main, fat cable
-				thin: 0.92/2 // radius of thinner cables
+				thin: 0.92/2, // radius of thinner cables
+				number: 100 // number of vertical cables
 			}
 		};
 	}
@@ -171,13 +173,14 @@ function createGoldenGate(dimensions) {
 	function createCables(dims) {
 		var cables = new THREE.Object3D();
 
+		// Thick "curvy" cables.
 		for (var side = -1; side <= 1; side += 2) {
 			// Middle portion
 			var middleCurve = new THREE.CubicBezierCurve3(
-				new THREE.Vector3(-dims.bridge.main_span/2, dims.tower.height, 0),
+				new THREE.Vector3(-dims.bridge.main_span/2, dims.tower.height + dims.tower.base, 0),
 				new THREE.Vector3(0, dims.bridge.clearance, 0),
 				new THREE.Vector3(0, dims.bridge.clearance, 0),
-				new THREE.Vector3(+dims.bridge.main_span/2, dims.tower.height, 0)
+				new THREE.Vector3(+dims.bridge.main_span/2, dims.tower.height + dims.tower.base, 0)
 			);
 			var middleGeom = new THREE.TubeGeometry(middleCurve, 128, dims.cable.fat, 64);
 			var middleMesh = new THREE.Mesh(middleGeom, cableMat);
@@ -186,7 +189,7 @@ function createGoldenGate(dimensions) {
 
 			// Left portion
 			var leftCurve = new THREE.CubicBezierCurve3(
-				new THREE.Vector3(-dims.bridge.main_span/2, dims.tower.height, 0),
+				new THREE.Vector3(-dims.bridge.main_span/2, dims.tower.height + dims.tower.base, 0),
 				new THREE.Vector3(-dims.bridge.main_span/2*1.05, dims.tower.height*0.95, 0), // arbitrary curve
 				new THREE.Vector3(-dims.bridge.total_span/2*0.95, dims.bridge.clearance*1.05, 0), // arbitrary curve
 				new THREE.Vector3(-dims.bridge.total_span/2, dims.bridge.clearance, 0)
@@ -198,7 +201,7 @@ function createGoldenGate(dimensions) {
 
 			// Right portion
 			var rightCurve = new THREE.CubicBezierCurve3(
-				new THREE.Vector3(dims.bridge.main_span/2, dims.tower.height, 0),
+				new THREE.Vector3(dims.bridge.main_span/2, dims.tower.height + dims.tower.base, 0),
 				new THREE.Vector3(dims.bridge.main_span/2*1.05, dims.tower.height*0.95, 0), // arbitrary curve
 				new THREE.Vector3(dims.bridge.total_span/2*0.95, dims.bridge.clearance*1.05, 0), // arbitrary curve
 				new THREE.Vector3(dims.bridge.total_span/2, dims.bridge.clearance, 0)
@@ -207,6 +210,37 @@ function createGoldenGate(dimensions) {
 			var rightMesh = new THREE.Mesh(rightGeom, cableMat);
 			rightMesh.position.z = side * dims.bridge.width/2; 
 			cables.add(rightMesh);
+		}
+
+		// Thin vertical cables.
+		for (var side = -1; side <= 1; side += 2) {
+			var verticalCables = new THREE.Object3D();
+
+			// Uniform vertical cables
+			for (var i = 0; i < dims.cable.number; i++) {
+				var height = dims.tower.height - dims.bridge.clearance;
+				var geom = new THREE.CylinderGeometry(dims.cable.thin, dims.cable.thin, height);
+				var mesh = new THREE.Mesh(geom, cableMat);
+				mesh.position.x = i * dims.bridge.total_span/dims.cable.number;
+				mesh.position.y = height/2 + dims.bridge.clearance;
+				mesh.position.z = side * dims.bridge.width/2;
+				verticalCables.add(mesh);
+			}
+			verticalCables.position.x = -dims.bridge.total_span/2;
+			cables.add(verticalCables);
+
+			// Middle cutout
+			var middleShape = new THREE.Shape();
+			middleShape.moveTo(-dims.bridge.main_span/2, dims.tower.height + dims.tower.base);
+			middleShape.bezierCurveTo(0, dims.bridge.clearance, 
+									  0, dims.bridge.clearance, 
+									  +dims.bridge.main_span/2, dims.tower.height + dims.tower.base);
+			var thickness = dims.bridge.width + 2*dims.cable.thin;
+			var middleGeom = new THREE.ExtrudeGeometry(middleShape, {amount: thickness, bevelEnabled: false});
+			var middleMesh = new THREE.Mesh(middleGeom, devMat);
+			middleMesh.position.z = -thickness/2;
+			
+			cables.add(middleMesh);
 		}
 
 		return cables;
@@ -233,28 +267,28 @@ function createGoldenGate(dimensions) {
 	var cables = createCables(dims);
 	goldenGate.add(cables);
 
-	// Land
-	var landGeom = new THREE.RingGeometry(dims.bridge.main_span/2, dims.bridge.length/2, 32);
-	var landMesh = new THREE.Mesh(landGeom, landMat);
-	landMesh.rotation.x = -Math.PI/2;
-	goldenGate.add(landMesh);
+	// // Land
+	// var landGeom = new THREE.RingGeometry(dims.bridge.main_span/2, dims.bridge.length/2, 32);
+	// var landMesh = new THREE.Mesh(landGeom, landMat);
+	// landMesh.rotation.x = -Math.PI/2;
+	// goldenGate.add(landMesh);
 
-	var land2Geom = new THREE.RingGeometry(dims.bridge.main_span/2, dims.bridge.length/2, 32);
-	var land2Mesh = new THREE.Mesh(land2Geom, landMat);
-	land2Mesh.rotation.x = -Math.PI/2;
-	land2Mesh.position.y = -dims.bridge.clearance*1.1;
-	goldenGate.add(land2Mesh);
+	// var land2Geom = new THREE.RingGeometry(dims.bridge.main_span/2, dims.bridge.length/2, 32);
+	// var land2Mesh = new THREE.Mesh(land2Geom, landMat);
+	// land2Mesh.rotation.x = -Math.PI/2;
+	// land2Mesh.position.y = -dims.bridge.clearance*1.1;
+	// goldenGate.add(land2Mesh);
 
-	var land3Geom = new THREE.CylinderGeometry(dims.bridge.length/2, dims.bridge.length/2, dims.bridge.clearance, 32, 32, true);
-	var land3Mesh = new THREE.Mesh(land3Geom, landMat);
-	land3Mesh.position.y = -dims.bridge.clearance/2;
-	goldenGate.add(land3Mesh);
+	// var land3Geom = new THREE.CylinderGeometry(dims.bridge.length/2, dims.bridge.length/2, dims.bridge.clearance, 32, 32, true);
+	// var land3Mesh = new THREE.Mesh(land3Geom, landMat);
+	// land3Mesh.position.y = -dims.bridge.clearance/2;
+	// goldenGate.add(land3Mesh);
 
-	// Water
-	var waterGeom = new THREE.CylinderGeometry(dims.bridge.main_span/2, dims.bridge.main_span/2, dims.bridge.clearance, 32, 32);
-	var waterMesh = new THREE.Mesh(waterGeom, waterMat);
-	waterMesh.position.y = -dims.bridge.clearance/2;
-	goldenGate.add(waterMesh);
+	// // Water
+	// var waterGeom = new THREE.CylinderGeometry(dims.bridge.main_span/2, dims.bridge.main_span/2, dims.bridge.clearance, 32, 32);
+	// var waterMesh = new THREE.Mesh(waterGeom, waterMat);
+	// waterMesh.position.y = -dims.bridge.clearance/2;
+	// goldenGate.add(waterMesh);
 
 	return goldenGate;
 }
