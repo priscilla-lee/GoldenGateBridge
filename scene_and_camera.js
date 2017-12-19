@@ -44,97 +44,43 @@ function createScene() {
   var bridge = createGoldenGate(bridgeDims);
   scene.add(bridge);
 
+  var worldDims = {
+    radius: 2000,
+    depth: 100
+  };
+
+  // Add the road on top of the bridge.
+  var roadGeom = new THREE.BoxGeometry(bridgeDims.bridge.length, 1, bridgeDims.bridge.width*0.75);
+  var roadMat = new THREE.MeshPhongMaterial({color: "#c2c2a3", side: THREE.DoubleSide});
+  var roadMesh = new THREE.Mesh(roadGeom, roadMat);
+  roadMesh.position.y = bridgeDims.bridge.clearance;
+  scene.add(roadMesh);
+
   // Add vehicles driving across the bridge.
   // var vehicles = createVehicles();
   // animateDriving(scene, vehicles);
 
-  var worldDims = {
-    radius: 2000,
-    water_depth: 100
-  };
 
-  // function createTerrain() {
-  //   var terrainGeom = new THREE.Geometry();
+  // Create the terrain, given the shape.
+  function createTerrain(shape) {   
+    // Extrude, position, and rotate.
+    var thickness = worldDims.depth;
+    var extrude = new THREE.ExtrudeGeometry(shape, {amount: thickness, bevelEnabled: false});
+    extrude.translate(0, 0, -thickness/3);
+    extrude.rotateX(Math.PI/2);
 
-  //   for (var x = -1000; x <= 1000; x += 100) {
-  //     for (var y = -1000; y <= 1000; y += 100) {
-  //       var ball = new THREE.SphereGeometry(10, 32, 32);
-  //       ball.translate(x, y, 0);
-  //       terrainGeom.merge(ball);
-  //     }
-  //   }
-  //   terrainGeom.rotateX(Math.PI/2);
+    // Bound within sphere of the "world".
+    var sphere = new THREE.SphereGeometry(worldDims.radius, 32, 32, 0, 2*Math.PI, 0, Math.PI/2);
 
-  //   return terrainGeom;
-  // }
-  var markers = new THREE.Object3D();
-
-  for (var x = -2000; x <= 2000; x += 400) {
-    for (var y = -2000; y <= 2000; y += 400) {
-      var ballGeom = new THREE.SphereGeometry(20, 32, 32);
-      var ballMat;
-      if (x == -2000 && y == -2000) {
-        ballMat = new THREE.MeshPhongMaterial({color: "green", side: THREE.DoubleSide});
-      } else {
-        ballMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSide});        
-      }
-      var ballMesh = new THREE.Mesh(ballGeom, ballMat);
-      ballMesh.position.x = x;
-      ballMesh.position.y = y;
-      markers.add(ballMesh);
-    }
+    // Use ThreeBSP and csg.js to "punch out" the intersection.
+    extrude = new ThreeBSP(extrude);
+    sphere = new ThreeBSP(sphere);
+    var mat = new THREE.MeshPhongMaterial({color: "#669900", side: THREE.DoubleSide});
+    var terrain = extrude.intersect(sphere).toMesh(mat);
+    return terrain;
   }
-  markers.rotateX(Math.PI/2);
-  //terrain.rotateZ(-Math.PI/2);
-  scene.add(markers);
 
-  // Create a "bounding" area for the terrain (using an ExtrudeGeometry).
-  var area1Shape = new THREE.Shape();
-  area1Shape.moveTo(-2000, 0);
-  area1Shape.splineThru([
-    new THREE.Vector2(-2000, 0),
-    new THREE.Vector2(-1600, -300),
-    new THREE.Vector2(-900, -400),
-    new THREE.Vector2(-1000, -200),
-    new THREE.Vector2(-400, 0),
-    new THREE.Vector2(-600, 400),
-    new THREE.Vector2(-400, 800),
-    new THREE.Vector2(-600, 1600),
-    new THREE.Vector2(0, 2000)
-  ]);
-  area1Shape.lineTo(-2000, 2000);
-
-  var thickness = 100;
-  var area1 = new THREE.ExtrudeGeometry(area1Shape, {amount: thickness, bevelEnabled: false});
-  area1.translate(0, 0, -thickness/2);
-  area1.rotateX(Math.PI/2);
-  var area1Mat = new THREE.MeshPhongMaterial({color: "yellow", side: THREE.DoubleSide});  
-  var area1Mesh = new THREE.Mesh(area1, area1Mat);
-  scene.add(area1Mesh);
-
-  var area2Shape = new THREE.Shape();
-  area2Shape.moveTo(400, -2000);
-  area2Shape.splineThru([
-    new THREE.Vector2(400, -2000),
-    new THREE.Vector2(600, -1400),
-    new THREE.Vector2(500, -1000),
-    new THREE.Vector2(700, -400),
-    new THREE.Vector2(400, 0),
-    new THREE.Vector2(1600, 800),
-    new THREE.Vector2(2000, 2000)
-  ]);
-  area2Shape.lineTo(2000, -2000);
-
-  var area2 = new THREE.ExtrudeGeometry(area2Shape, {amount: thickness, bevelEnabled: false});
-  area2.translate(0, 0, -thickness/2);
-  area2.rotateX(Math.PI/2);
-  var area2Mat = new THREE.MeshPhongMaterial({color: "orange", side: THREE.DoubleSide});  
-  var area2Mesh = new THREE.Mesh(area2, area2Mat);
-  scene.add(area2Mesh);
-
-
-
-  TW.loadTextures(['sunset.jpg', 'water.jpg', /*'terrain.jpg',*/], function(textures) {
+  TW.loadTextures(['sunset.jpg', 'water.png'], function(textures) {
     // Sky
     textures[0].wrapS = THREE.MirroredRepeatWrapping; //horizontal
     textures[0].wrapT = THREE.MirroredRepeatWrapping; //vertical
@@ -150,25 +96,49 @@ function createScene() {
     textures[1].wrapT = THREE.MirroredRepeatWrapping; //vertical
     textures[1].repeat.set(4, 4);
     textures[1].needsUpdate = true;
-    var waterGeom = new THREE.CylinderGeometry(worldDims.radius, worldDims.radius, worldDims.water_depth, 32, 32);
-    var waterMat = new THREE.MeshPhongMaterial({color: "#009999", transparent: true, opacity: 0.4, side: THREE.DoubleSide, map: textures[1]});
+    var waterGeom = new THREE.CylinderGeometry(worldDims.radius, worldDims.radius, worldDims.depth, 32, 32);
+    var waterMat = new THREE.MeshPhongMaterial({color: "cyan", transparent: true, opacity: 0.6, side: THREE.DoubleSide, map: textures[1]});
     var waterMesh = new THREE.Mesh(waterGeom, waterMat);
-    waterMesh.position.y = -worldDims.water_depth/2; 
+    waterMesh.position.y = -worldDims.depth/2; 
     scene.add(waterMesh);
-
-    // Land, terrain
-    // textures[2].wrapS = THREE.MirroredRepeatWrapping; //horizontal
-    // textures[2].wrapT = THREE.MirroredRepeatWrapping; //vertical
-    // textures[2].repeat.set(4, 4);
-    // textures[2].needsUpdate = true;
-    // var terrainGeom = createTerrain();
-    // var terrainMat = new THREE.MeshPhongMaterial({color: "green", side: THREE.BackSide, map: textures[2]});
-    // var terrainMesh = new THREE.Mesh(terrainGeom, terrainMat);
-    // scene.add(terrainMesh);
   });
 
+  // Left land mass
+  var leftShape = new THREE.Shape();
+  leftShape.moveTo(-2000, 0);
+  leftShape.splineThru([
+    new THREE.Vector2(-2000, 0),
+    new THREE.Vector2(-1600, -300),
+    new THREE.Vector2(-900, -400),
+    new THREE.Vector2(-1000, -200),
+    new THREE.Vector2(-400, 0),
+    new THREE.Vector2(-600, 400),
+    new THREE.Vector2(-400, 800),
+    new THREE.Vector2(-600, 1600),
+    new THREE.Vector2(0, 2000)
+  ]);
+  leftShape.lineTo(-2000, 2000);
+  var leftTerrain = createTerrain(leftShape);
+  scene.add(leftTerrain);
+
+  // Right land mass
+  var rightShape = new THREE.Shape();
+    rightShape.moveTo(400, -2000);
+    rightShape.splineThru([
+      new THREE.Vector2(400, -2000),
+      new THREE.Vector2(600, -1400),
+      new THREE.Vector2(500, -1000),
+      new THREE.Vector2(700, -400),
+      new THREE.Vector2(400, 0),
+      new THREE.Vector2(1600, 800),
+      new THREE.Vector2(2000, 2000)
+    ]);
+    rightShape.lineTo(2000, -2000); 
+  var rightTerrain = createTerrain(rightShape);
+  scene.add(rightTerrain);
+
   // Add white ambient light.
-  var ambientLight = new THREE.AmbientLight(TW.WHITE, 0.7);
+  var ambientLight = new THREE.AmbientLight(TW.WHITE, 0.75);
   scene.add(ambientLight);
 
   // Add a white directional light.

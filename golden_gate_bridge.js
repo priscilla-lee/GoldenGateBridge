@@ -12,9 +12,8 @@
 
 /* Origin: below the center of the bridge, at water level. */
 function createGoldenGate(dimensions) {
-	var bridgeMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSide});
-	var cableMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSide});
-	var roadMat = new THREE.MeshPhongMaterial({color: "gray", side: THREE.DoubleSide});
+	var bridgeMat = new THREE.MeshPhongMaterial({color: "#ff3300", side: THREE.DoubleSide});
+	var cableMat = new THREE.MeshPhongMaterial({color: "#ff3300", side: THREE.DoubleSide});
 
 	var dims;
 
@@ -55,20 +54,15 @@ function createGoldenGate(dimensions) {
 
 	/* Origin: at the center of the road's surface. */
 	function createBridge(dims) {
-		var road = new THREE.Object3D();
-
-		// Road surface
-		var surfaceGeom = new THREE.BoxGeometry(dims.bridge.length, 1, dims.bridge.width);
-		var surfaceMesh = new THREE.Mesh(surfaceGeom, roadMat);
-		road.add(surfaceMesh);
+		var bridge = new THREE.Object3D();
 
 		// Support underneath
 		var supportGeom = new THREE.BoxGeometry(dims.bridge.length, dims.bridge.height, dims.bridge.width);
 		var supportMesh = new THREE.Mesh(supportGeom, bridgeMat);
 		supportMesh.position.y = -dims.bridge.height/2;
-		road.add(supportMesh);
+		bridge.add(supportMesh);
 
-		return road;
+		return bridge;
 	}
 
 	/* Origin below the center of the tower. */
