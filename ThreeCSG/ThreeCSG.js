@@ -28,7 +28,6 @@ window.ThreeBSP = (function() {
 			this.matrix = new THREE.Matrix4;
 			return this;
 		} else {
-			console.log(geometry);
 			throw 'ThreeBSP: Given geometry is unsupported';
 		}
 	

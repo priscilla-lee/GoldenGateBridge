@@ -8,19 +8,14 @@
  * References
  * Bridge structure: http://sitescan.net/wp-content/uploads/2017/05/GoldenGateV1.jpg 
  * Bridge towers: https://i.pinimg.com/736x/7e/96/68/7e9668e32fe261783d963d9c5a2635d7--bridge-structure-technical-drawings.jpg
- *
- * TO DO: view from inside the car?
  */
-
-var roadMat = new THREE.MeshPhongMaterial({color: "gray", side: THREE.DoubleSide});
-var bridgeMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSide});
-var cableMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSide});
-var landMat = new THREE.MeshPhongMaterial({color: "#7ebc74", side: THREE.DoubleSide});
-var waterMat = new THREE.MeshPhongMaterial({color: "cyan", transparent: true, opacity: 0.5});
-var devMat = new THREE.MeshPhongMaterial({color: "yellow", side: THREE.DoubleSide});
 
 /* Origin: below the center of the bridge, at water level. */
 function createGoldenGate(dimensions) {
+	var bridgeMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSide});
+	var cableMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSide});
+	var roadMat = new THREE.MeshPhongMaterial({color: "gray", side: THREE.DoubleSide});
+
 	var dims;
 
 	if (dimensions != null) {
@@ -247,7 +242,7 @@ function createGoldenGate(dimensions) {
 	/* Build the golden gate as a composition of its components. */
 	var goldenGate = new THREE.Object3D();
 
-	//Road
+	// Road
 	var bridge = createBridge(dims);
 	bridge.position.y = dims.bridge.clearance;
 	goldenGate.add(bridge);
@@ -264,29 +259,6 @@ function createGoldenGate(dimensions) {
 	// Cables
 	var cables = createCables(dims);
 	goldenGate.add(cables);
-
-	// // Land
-	// var landGeom = new THREE.RingGeometry(dims.bridge.main_span/2, dims.bridge.length/2, 32);
-	// var landMesh = new THREE.Mesh(landGeom, landMat);
-	// landMesh.rotation.x = -Math.PI/2;
-	// goldenGate.add(landMesh);
-
-	// var land2Geom = new THREE.RingGeometry(dims.bridge.main_span/2, dims.bridge.length/2, 32);
-	// var land2Mesh = new THREE.Mesh(land2Geom, landMat);
-	// land2Mesh.rotation.x = -Math.PI/2;
-	// land2Mesh.position.y = -dims.bridge.clearance*1.1;
-	// goldenGate.add(land2Mesh);
-
-	// var land3Geom = new THREE.CylinderGeometry(dims.bridge.length/2, dims.bridge.length/2, dims.bridge.clearance, 32, 32, true);
-	// var land3Mesh = new THREE.Mesh(land3Geom, landMat);
-	// land3Mesh.position.y = -dims.bridge.clearance/2;
-	// goldenGate.add(land3Mesh);
-
-	// // Water
-	// var waterGeom = new THREE.CylinderGeometry(dims.bridge.main_span/2, dims.bridge.main_span/2, dims.bridge.clearance, 32, 32);
-	// var waterMesh = new THREE.Mesh(waterGeom, waterMat);
-	// waterMesh.position.y = -dims.bridge.clearance/2;
-	// goldenGate.add(waterMesh);
 
 	return goldenGate;
 }
