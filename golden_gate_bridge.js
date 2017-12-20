@@ -29,11 +29,6 @@ function createGoldenGate(dimensions) {
 				main_span: 1280, // length of main suspension span (between towers)
 				side_span: 343 // length on either side of towers
 			}, 
-			road: {
-				roadway: 19, // width of roadway
-				sidewalk: 3, // width of each sidewalk
-				curb: 1.5, // width of each curb
-			},
 			tower: {
 				height: 227, // total height of tower
 				above_roadway: 152, // height above roadway
