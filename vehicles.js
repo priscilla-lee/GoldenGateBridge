@@ -384,10 +384,10 @@ function createBus() {
 /* Return an array of different types of vehicles. */
 function createVehicles() {
 	var vehicles = [];
-    vehicles.push(createHatchback("mediumorchid"));
-    vehicles.push(createSedan("orange"));
-    vehicles.push(createVan("turquoise"));
-    vehicles.push(createTruck("chartreuse", "white"));
+    // vehicles.push(createHatchback("mediumorchid"));
+    // vehicles.push(createSedan("orange"));
+    // vehicles.push(createVan("turquoise"));
+    // vehicles.push(createTruck("chartreuse", "white"));
     vehicles.push(createBus());
     return vehicles;
 }

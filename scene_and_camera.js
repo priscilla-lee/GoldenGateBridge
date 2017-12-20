@@ -115,15 +115,14 @@ function createScene() {
     new THREE.Vector2(-1960, 400),
     new THREE.Vector2(-1600, 200),
     new THREE.Vector2(-1200, 300),
-    new THREE.Vector2(-800, 0),
-    new THREE.Vector2(-700, 0),
-    new THREE.Vector2(-600, 0)
+    new THREE.Vector2(-800, 0)//,
+    // new THREE.Vector2(-700, 0),
+    // new THREE.Vector2(-600, 0)
   ]);
-  path.lineTo(600, 0);
+  path.lineTo(800, 0);
   path.splineThru([
-    new THREE.Vector2(600, 0),
-    new THREE.Vector2(700, 0),
-    new THREE.Vector2(800, 0),
+    // new THREE.Vector2(600, 0),
+    // new THREE.Vector2(700, 0),
     new THREE.Vector2(1200, -400),
     new THREE.Vector2(1000, -800),
     new THREE.Vector2(1300, -1520)
@@ -219,7 +218,7 @@ function createScene() {
   return scene;
 }
 
-function createScene2() {
+function createOneVehicle() {
   var scene = new THREE.Scene();
 
   // Add car.
@@ -264,7 +263,7 @@ function setupBirdsEyeView() {
     minz: -5, maxz: 5
   }
 
-  var state = TW.cameraSetup(renderer, scene, entireBridge);
+  var state = TW.cameraSetup(renderer, scene, entireBridge);// vehicle);
   TW.render();
 
   birds_eye_render = TW.lastClickTarget.TW_state.render;

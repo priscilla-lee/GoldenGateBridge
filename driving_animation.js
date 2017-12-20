@@ -6,6 +6,16 @@
  * Animates the different vehicles, driving across the bridge.
  */
 function animateDriving(scene, vehicles, path) {
+	// var points = path.getPoints(20);
+	// console.log(points);
+
+	for (var i = 0; i < 200; i++) {
+		var p = path.getPoint(1/200 * i); //points[i];
+		var sphere = new THREE.Mesh(new THREE.SphereGeometry(5), new THREE.MeshBasicMaterial({color: "red"}));
+		sphere.position.set(p.x, 50, p.y);
+		scene.add(sphere);
+	}
+
 	function _animateCars(vehicles) {
 		for (var i = 0; i < vehicles.length; i++) {
 			var vehicle = vehicles[i];
