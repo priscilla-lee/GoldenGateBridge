@@ -10,7 +10,7 @@ function animateDriving(scene, vehicles, path) {
 		for (var i = 0; i < vehicles.length; i++) {
 			var vehicle = vehicles[i];
 			vehicle.onRoad = false;
-			vehicle.position.y = 50; // + 5; // Clearance + half vehicle height
+			vehicle.position.y = 50 + 2; // Clearance + road thickness
 			vehicle.position.x = -500;
 		}
 

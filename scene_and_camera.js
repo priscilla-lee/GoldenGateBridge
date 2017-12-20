@@ -223,7 +223,7 @@ function createScene2() {
   var scene = new THREE.Scene();
 
   // Add car.
-  var car = createBus("yellow");
+  var car = createBus();
   scene.add(car);
 
   // Add white ambient light.
@@ -240,7 +240,7 @@ function createScene2() {
 
 /* Sets up a bird's eye view of the golden gate bridges. Supports "orbit controls." */
 function setupBirdsEyeView() {
-  var scene = createScene2(); //createScene();
+  var scene = createScene();
 
   var renderer = new THREE.WebGLRenderer({antialias: true});
   TW.mainInit(renderer, scene, {parent: document.getElementById('birds_eye')} );
@@ -258,13 +258,13 @@ function setupBirdsEyeView() {
     minz: -100, maxz: 100
   };
 
-  var hatchback = {
-    minx: -13, maxx: 13,
-    miny: 0, maxy: 13,
+  var vehicle = {
+    minx: -14, maxx: 14,
+    miny: 0, maxy: 14,
     minz: -5, maxz: 5
   }
 
-  var state = TW.cameraSetup(renderer, scene, hatchback); //entireBridge);
+  var state = TW.cameraSetup(renderer, scene, entireBridge);
   TW.render();
 
   birds_eye_render = TW.lastClickTarget.TW_state.render;
