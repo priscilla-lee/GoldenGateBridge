@@ -15,14 +15,11 @@ Images:
  
 <html>
   <head>
-    <title>Golden Gate Bridge</title>
+    <title>Golden Gate Bridge Demo</title>
     <style>   
-      body { margin: 10px; min-width: 820px; font-size: 125%;}
+      body { margin: 15px; margin-left: 6%; margin-right: 6%; min-width: 820px; font-size: 125%;}
       div.canvas { display: inline-block; display: inline-block; margin: 0px 10px; }
       canvas { width: 600px; height: 500px; }
-      .monospace { font-family: monospace; }
-      img { height: 400px;}
-      .smaller { height: 200px; }
     </style>
     <!-- Three.js and TW resources -->
     <script src="Three/three-r80.min.js"></script> <!-- https://cs.wellesley.edu/~cs307/threejs/libs/three-r80.min.js -->
@@ -37,82 +34,16 @@ Images:
     <script src="golden_gate_bridge.js"></script>
     <script src="vehicles.js"></script>
     <script src="driving_animation.js"></script>
-    <script src="scene.js"></script>
   </head>
 <body>
-  <h1>Golden Gate Bridge</h1>
-  <h3>Priscilla Lee, CS 307 Fall 2017</h3>
+  <h1>Golden Gate Bridge Demo</h1>
   <p>
-    Demo on left --> "Birds Eye View" --> orbit controls, click and drag (left to rotate, right to pan)<br>
+    Demo on left --> "Bird's Eye View" --> orbit controls, click and drag (left click to rotate, right click to pan)<br>
     Demo on right --> "First Person View" --> click to toggle direction (forwards/backwards)
   </p>
   <div id="birds_eye" class="canvas"></div>
   <div id="fpv" class="canvas"></div>
+  <script src="scene.js"></script>
   <script src="camera.js"></script>
-
-  <h1>Overview</h1>
-  <p>
-    This was a really fun project. I incorporated many major graphics concepts that
-    we learned this semester including hierarchical modeling, lighting, camera, curves,
-    texture-mapping, transparency, user interaction, and animation.
-  </p>
-
-  <h1>Components</h1>
-  <p>The biggest feature of my project is the iconic Golden Gate Bridge.</p>
-  <img src="screenshots/bridge.png">
-  <img src="screenshots/tower.png">
-  <p>I also created a mini "world" (water, land, and sky).</p>
-  <img src="screenshots/empty_world_side.png">
-  <img src="screenshots/empty_world_above.png">
-  <p>I built 5 different types of vehicles to drive across the bridge: hatchback, sedan, van, truck, and bus.</p>
-  <img class="smaller" src="screenshots/hatchback.png">
-  <img class="smaller" src="screenshots/sedan.png">
-  <img class="smaller" src="screenshots/van.png">
-  <img class="smaller" src="screenshots/truck.png">
-  <img class="smaller" src="screenshots/bus.png">
-  <p>Lastly, I added a curved road, along which the vehicles could drive.</p>
-  <img src="screenshots/road_above.png">
-  <img src="screenshots/road_side.png">
-
-  <h1>Constructive Solid Geometry (CSG and ThreeCSG)</h1>
-  <p>
-    I used <a href="https://en.wikipedia.org/wiki/Constructive_solid_geometry">constructive solid geometry</a> 
-    in 2 places: the road and the bridge cables. I used <a href="https://github.com/evanw/csg.js/">csg.js</a> 
-    and <a href="https://github.com/chandlerprall/ThreeCSG">ThreeCSG</a>.<br><br>
-
-    To create the vertical cables of the bridge, I built an ExtrudeGeometry to "mask" the "bounding area"
-    of the cables, and I used CSG to grab their intersection.
-  </p>
-  <img src="screenshots/cables_shape.png">
-  <img src="screenshots/cables_masked.png">
-  <p>
-    I also used CSG to create the road. With a curve, I was able to create a TubeGeometry. In order to "extract" a flat
-    road surface from the tube, I "intersected" it with a very flat cylinder, using CSG.
-  </p>
-
-  <h1>Shapes and ExtrudeGeometries</h1>
-  <p>
-    I became very familiar with  Shapes and ExtrudeGeometries, because I used them a ton in this project
-    (for the land "islands" and the vehicles, for example). It was pretty meticulous drawing the shapes out, and
-    determining the coordinates, and it took a lot of pencil-sketching.
-  </p>
-
-  <h1>Bezier and Spline Curves</h1>
-  <p>
-    In addition to incorporating a bezier curve in the bridge itself, I used curves in 2 other major places: the 
-    land "islands" and the road.<br><br>
-
-    The shapes/outlines of each of the land islands are formed from a spline curve. I attempted to create
-    the road from a spline curve, but it was very difficult to "control" the curve and force it to pass
-    across the bridge without wiggling. So I strung together bezier curves instead.
-  </p>
-
-  <h1>Animating along a Curve</h1>
-  <p>
-    Because I ambitiously decided to make a curvy road, I needed some way to animate my vehicles (and my camera)
-    driving along the curve. Luckily I found <span class="monospace">curve.getPoint(t)</span> and 
-    <span class="monospace">curve.getTangent(t)</span> very useful. It was tricky to get the rotation 
-    and everything working, but I'm very happy with the results.
-  </p>
 </body>
 </html>

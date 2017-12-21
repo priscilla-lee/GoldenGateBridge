@@ -3,61 +3,48 @@ Written by: Priscilla Lee
 Course: CS 307, Fall 2017
 Assignment: Final Project, Golden Gate Bridge
 
-Animates a scene of cars driving across the Golden Gate Bridge.
-
-Acknowledgments: 
-- Referenced example tutorial http://learningthreejs.com/blog/2011/12/10/constructive-solid-geometry-with-csg-js/
-
-Images:
-- Sunset sky https://www.sharecg.com/images/medium/18267.jpg
-- Water https://d2v9y0dukr6mq2.cloudfront.net/video/thumbnail/NYMERHYKeik53rfbr/videoblocks-flying-over-calm-deep-blue-color-of-sea-water-background_rxgspureax_thumbnail-full01.png
+Project page (see demo at golden_gate.html).
 -->
  
 <html>
   <head>
-    <title>Golden Gate Bridge</title>
+    <title>Golden Gate Bridge Project</title>
     <style>   
-      body { margin: 10px; min-width: 820px; font-size: 125%;}
+      body { margin: 50px; margin-left: 12%; margin-right: 12%; min-width: 820px; font-size: 125%;}
       div.canvas { display: inline-block; display: inline-block; margin: 0px 10px; }
       canvas { width: 600px; height: 500px; }
       .monospace { font-family: monospace; }
-      img { height: 400px;}
-      .smaller { height: 200px; }
+      img { height: 300px;}
+      .smaller { height: 125px; }
     </style>
-    <!-- Three.js and TW resources -->
-    <script src="Three/three-r80.min.js"></script> <!-- https://cs.wellesley.edu/~cs307/threejs/libs/three-r80.min.js -->
-    <script src="Three/OrbitControls.js"></script> <!-- https://cs.wellesley.edu/~cs307/threejs/libs/OrbitControls.js -->
-    <script src="Three/tw-fa16.js"></script> <!-- https://cs.wellesley.edu/~cs307/threejs/libs/tw-fa16.js -->
-
-    <!-- csg and ThreeCSG resources -->
-    <script src="csg.js/csg.js"></script> <!-- https://github.com/evanw/csg.js/ -->
-    <script src="ThreeCSG/ThreeCSG.js"></script> <!-- https://github.com/chandlerprall/ThreeCSG -->
-
-    <!-- Scripts for the golden gate bridge -->
-    <script src="golden_gate_bridge.js"></script>
-    <script src="vehicles.js"></script>
-    <script src="driving_animation.js"></script>
-    <script src="scene.js"></script>
   </head>
 <body>
-  <h1>Golden Gate Bridge</h1>
+  <h1>Golden Gate Bridge Project</h1>
   <h3>Priscilla Lee, CS 307 Fall 2017</h3>
-  <p>
-    Demo on left --> "Birds Eye View" --> orbit controls, click and drag (left to rotate, right to pan)<br>
-    Demo on right --> "First Person View" --> click to toggle direction (forwards/backwards)
-  </p>
-  <div id="birds_eye" class="canvas"></div>
-  <div id="fpv" class="canvas"></div>
-  <script src="camera.js"></script>
 
-  <h1>Overview</h1>
+  <h2>Demo</h2>
+  <p>
+    View the demo <a href="golden_gate.html">here</a>. It make take a while to load.
+  </p>
+
+  <h2>Overview</h2>
   <p>
     This was a really fun project. I incorporated many major graphics concepts that
     we learned this semester including hierarchical modeling, lighting, camera, curves,
     texture-mapping, transparency, user interaction, and animation.
   </p>
 
-  <h1>Components</h1>
+  <h2>Screenshots</h2>
+  <p>"Bird's Eye View" (click and draggable)</p>
+  <img src="screenshots/birds_eye1.png">
+  <img src="screenshots/birds_eye2.png">
+  <img src="screenshots/birds_eye3.png">
+  <p>"First Person View" (animated from a car's perspective)</p>
+  <img src="screenshots/fpv1.png">
+  <img src="screenshots/fpv2.png">
+  <img src="screenshots/fpv3.png">
+
+  <h2>Components</h2>
   <p>The biggest feature of my project is the iconic Golden Gate Bridge.</p>
   <img src="screenshots/bridge.png">
   <img src="screenshots/tower.png">
@@ -74,7 +61,7 @@ Images:
   <img src="screenshots/road_above.png">
   <img src="screenshots/road_side.png">
 
-  <h1>Constructive Solid Geometry (CSG and ThreeCSG)</h1>
+  <h2>Constructive Solid Geometry (CSG and ThreeCSG)</h2>
   <p>
     I used <a href="https://en.wikipedia.org/wiki/Constructive_solid_geometry">constructive solid geometry</a> 
     in 2 places: the road and the bridge cables. I used <a href="https://github.com/evanw/csg.js/">csg.js</a> 
@@ -90,14 +77,14 @@ Images:
     road surface from the tube, I "intersected" it with a very flat cylinder, using CSG.
   </p>
 
-  <h1>Shapes and ExtrudeGeometries</h1>
+  <h2>Shapes and ExtrudeGeometries</h2>
   <p>
     I became very familiar with  Shapes and ExtrudeGeometries, because I used them a ton in this project
     (for the land "islands" and the vehicles, for example). It was pretty meticulous drawing the shapes out, and
     determining the coordinates, and it took a lot of pencil-sketching.
   </p>
 
-  <h1>Bezier and Spline Curves</h1>
+  <h2>Bezier and Spline Curves</h2>
   <p>
     In addition to incorporating a bezier curve in the bridge itself, I used curves in 2 other major places: the 
     land "islands" and the road.<br><br>
@@ -107,11 +94,11 @@ Images:
     across the bridge without wiggling. So I strung together bezier curves instead.
   </p>
 
-  <h1>Animating along a Curve</h1>
+  <h2>Animating along a Curve</h2>
   <p>
     Because I ambitiously decided to make a curvy road, I needed some way to animate my vehicles (and my camera)
     driving along the curve. Luckily I found <span class="monospace">curve.getPoint(t)</span> and 
-    <span class="monospace">curve.getTangent(t)</span> very useful. It was very tricky to get the rotation 
+    <span class="monospace">curve.getTangent(t)</span> very useful. It was tricky to get the rotation 
     and everything working, but I'm very happy with the results.
   </p>
 </body>
