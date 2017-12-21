@@ -3,7 +3,7 @@
  * Course: CS 307, Fall 2017
  * Assignment: Final Project, Golden Gate Bridge
  * 
- * Creates different types of vehicles.
+ * Creates different types of vehicles (hatchback, sedan, van, truck, and bus).
  */
 
 /* Create a wheel given its radius. Origin is at its center. */
@@ -105,7 +105,7 @@ function createHatchback(color) {
 
     // Create the body, using the shapes.
     var bodyMat = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide});
-    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6, side: THREE.DoubleSide});
+    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6});
     var body = createAutoBody(profile, bodyMat, [window1, window2, window3], windowMat);
     hatchback.add(body);
 
@@ -162,7 +162,7 @@ function createSedan(color) {
 
     // Create the body, using the shapes.
     var bodyMat = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide});
-    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6, side: THREE.DoubleSide});
+    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6});
     var body = createAutoBody(profile, bodyMat, [window1, window2], windowMat);
     sedan.add(body);
 
@@ -213,7 +213,7 @@ function createVan(color) {
 
     // Create the body, using the shapes.
     var bodyMat = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide});
-    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6, side: THREE.DoubleSide});
+    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6});
     var body = createAutoBody(profile, bodyMat, [window1], windowMat);
     van.add(body);
 
@@ -265,7 +265,7 @@ function createTruck(color, cargoColor) {
 
     // Create the body, using the shapes.
     var bodyMat = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide});
-    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6, side: THREE.DoubleSide});
+    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6});
     var body = createAutoBody(profile, bodyMat, [window1], windowMat);
     truck.add(body);
 
@@ -273,7 +273,7 @@ function createTruck(color, cargoColor) {
     var windshield = new THREE.Mesh(new THREE.PlaneGeometry(width*0.8, width*0.4), windowMat);
     windshield.rotateY(Math.PI/2);
     windshield.rotateX(-Math.PI/8);
-    windshield.position.set(11.11, 9.5, 0); // to avoid glitching overlapping faces
+    windshield.position.set(11.11, 9.5, 0);
     truck.add(windshield);
 
     // Add cargo.
@@ -338,7 +338,7 @@ function createBus() {
 
     // Create the body, using the shapes.
     var bodyMat = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide});    
-    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6, side: THREE.DoubleSide});
+    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6});
     var body = createAutoBody(profile, bodyMat, [window1, window2, window3, window4], windowMat);
     bus.add(body);
 

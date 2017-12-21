@@ -228,7 +228,7 @@ function createGoldenGate(dimensions) {
 		return cables;
 	}
 
-	/* Build the golden gate as a composition of its components. */
+	// Build the golden gate as a composition of its components.
 	var goldenGate = new THREE.Object3D();
 
 	// Road
@@ -239,7 +239,6 @@ function createGoldenGate(dimensions) {
 	// 2 towers
 	for (var side = -1; side <= 1; side += 2) {
 		var tower = createTower(dims);
-		//tower.position.y = dims.tower.height/2;
 		tower.rotation.y = Math.PI/2;
 		tower.position.x = side * dims.bridge.main_span/2;
 		goldenGate.add(tower);

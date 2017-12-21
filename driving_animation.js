@@ -3,7 +3,14 @@
  * Course: CS 307, Fall 2017
  * Assignment: Final Project, Golden Gate Bridge
  * 
- * Animates the different vehicles, driving across the bridge.
+ * Animates the vehicles driving across the bridge.
+ */
+
+/**
+ * Animate vehicles in a scene driving along a path. Vehicles drive forward
+ * along the path (rotating as necessary), giving enough space in between 
+ * each other. When a vehicle reaches the end of the road, it "cycles" through
+ * and waits in a queue to re-enter the road.
  */
 function animateDriving(scene, vehicles, path) {
 	// Set up animation parameters.
@@ -54,6 +61,7 @@ function animateDriving(scene, vehicles, path) {
 	for (var i = 0; i < vehicles.length; i++) {
 		var vehicle = vehicles[i];
 		vehicle.t = -1; // t indicates the vehicle's position on the curve.
+		moveVehicleTo(vehicle, 0);
 	}
 
 	// Add very first vehicle.
@@ -68,7 +76,6 @@ function animateDriving(scene, vehicles, path) {
 		// Animate all the vehicles that are on the road.
 		for (var i = 0; i < vehicles.length; i++) {
 			var vehicle = vehicles[i];
-
 			if (vehicle.t != -1) {
 				driveVehicleForward(vehicle);
 			}
@@ -79,8 +86,8 @@ function animateDriving(scene, vehicles, path) {
 			count = 0.00; // reset
 			var next = getNextVehicle();
 			if (next != null) {
-				scene.add(next);
 				next.t = front;
+				scene.add(next);
 			}
 		} 
 	}, interval); 
