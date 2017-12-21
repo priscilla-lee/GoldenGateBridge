@@ -6,68 +6,82 @@
  * Animates the different vehicles, driving across the bridge.
  */
 function animateDriving(scene, vehicles, path) {
-	// var points = path.getPoints(20);
-	// console.log(points);
+	// Set up animation parameters.
+	var front = 0.03; // front of the road
+	var end = 0.91; // end of the road
+	var spacing = 0.02; // distance in between vehicles
+	var count = 0.00; // global counter to trigger new vehicle when >= spacing
+	var delta_t = 0.0005; // how much to move each vehicle with every update
+	var interval = 50; // how often the vehicles get updated
 
-	for (var i = 0; i < 200; i++) {
-		var p = path.getPoint(1/200 * i); //points[i];
-		var sphere = new THREE.Mesh(new THREE.SphereGeometry(5), new THREE.MeshBasicMaterial({color: "red"}));
-		sphere.position.set(p.x, 50, p.y);
-		scene.add(sphere);
+	/**
+	 * Given a parameter t (range [0,1]), place the given vehicle at the corresponding
+	 * position on the curve. Also rotate it along the tangent of the curve. 
+	 */
+	function moveVehicleTo(vehicle, t) {
+		var point = path.getPoint(t);
+		var tangent = path.getTangent(t);
+		vehicle.position.set(point.x, 50 + 2, point.y); // clearance + road thickness
+		vehicle.rotation.y = -Math.atan(tangent.y/tangent.x);
 	}
+		
+	/* Drive a vehicle forward along the road or remove it once it reaches the end). */
+	function driveVehicleForward(vehicle) {
+		vehicle.t += delta_t;
 
-	function _animateCars(vehicles) {
-		for (var i = 0; i < vehicles.length; i++) {
-			var vehicle = vehicles[i];
-			vehicle.onRoad = false;
-			vehicle.position.y = 50 + 2; // Clearance + road thickness
-			vehicle.position.x = -500;
+		// Move the vehicle forward (or remove it).
+		if (vehicle.t <= end) { 
+			moveVehicleTo(vehicle, vehicle.t);
+		} else { // Reached end of the road.
+			scene.remove(vehicle);
+			vehicles.push(vehicles.shift()); // Cycle vehicle to the "back" of the queue.
+			vehicle.t = -1; 
 		}
-
-		scene.add(vehicles[0]);
-		vehicles[0].onRoad = true;
-
-		setInterval(function() {updateVehicles(vehicles);}, 50);
 	}
 
-	var spacing = 40;
-	var timestep = 0;
-	var dx = 2;
-
-	function updateVehicles(vehicles) {
-		timestep++;
-
-		// Move all the cars that are already on the road.
+	/* Grab the next off-road vehicle to add to the road. Return null if none. */
+	function getNextVehicle() {
 		for (var i = 0; i < vehicles.length; i++) {
 			var vehicle = vehicles[i];
-			if (vehicle.onRoad) {
-				vehicle.translateX(dx);	
+			if (vehicle.t == -1) {
+				return vehicle;
+			}
+		}
+		return null;
+	}
 
-				// "Cycle" to the back if drives past the end of the bridge.
-				if (vehicle.position.x > 500) {
-					scene.remove(vehicle);
-					vehicle.onRoad = false;
-					vehicle.position.x = -500;
-					vehicles.shift();
-					vehicles.push(vehicle);
-				}
+	// All vehicles are off the road. Indicate this with a negative "t".
+	for (var i = 0; i < vehicles.length; i++) {
+		var vehicle = vehicles[i];
+		vehicle.t = -1; // t indicates the vehicle's position on the curve.
+	}
+
+	// Add very first vehicle.
+	var first = vehicles[0];
+	scene.add(first);
+	first.t = front;
+
+	// Update the vehicles every interval.
+	setInterval(function() {
+		count += delta_t;
+
+		// Animate all the vehicles that are on the road.
+		for (var i = 0; i < vehicles.length; i++) {
+			var vehicle = vehicles[i];
+
+			if (vehicle.t != -1) {
+				driveVehicleForward(vehicle);
 			}
 		}
 
-		// Every 10 "updates", add a new vehicle (if there is one). 
-		if (timestep >= spacing) {
-			timestep = 0;
-
-			for (var i = 0; i < vehicles.length; i++) {
-				if (!vehicles[i].onRoad) {
-					var next = vehicles[i];
-					scene.add(next);
-					next.onRoad = true;
-					break;
-				}
+		// Add another vehicle if enough "space" on the road (using count & spacing).
+		if (count > spacing) {
+			count = 0.00; // reset
+			var next = getNextVehicle();
+			if (next != null) {
+				scene.add(next);
+				next.t = front;
 			}
-		}
-	}
-
-	_animateCars(vehicles);
+		} 
+	}, interval); 
 }

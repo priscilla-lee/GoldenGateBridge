@@ -6,8 +6,6 @@
  * Creates different types of vehicles.
  */
 
-var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6, side: THREE.DoubleSide});
-
 /* Create a wheel given its radius. Origin is at its center. */
 function createWheel(radius) {
     var wheel = new THREE.Object3D();
@@ -28,7 +26,7 @@ function createWheel(radius) {
     return wheel;
 }
 
-/* Create the front of the car (grille, headlights, bumper). Origin is at its center. */
+/* Create the front of a vehicle (grille and head lights). Origin is at its center. */
 function createFront(width, height) {
     var front = new THREE.Object3D();
 
@@ -47,12 +45,6 @@ function createFront(width, height) {
         front.add(light);
     }
 
-    // Bumper.
-    var bumperMat = new THREE.MeshPhongMaterial({color: "#b3b3b3", side: THREE.DoubleSide});
-    var bumper = new THREE.Mesh(new THREE.PlaneGeometry(width, height/4), bumperMat);
-    bumper.position.y = -height/2 + height/8;
-    front.add(bumper);
-
     return front;
 }
 
@@ -60,7 +52,7 @@ function createFront(width, height) {
  * Given the 2D shapes for a vehicle's side profile and window(s), create its body,
  * using an ExtrudeGeometry and PlaneGeometries. Origin is directly beneath its center.
  */
-function createBody(profile, bodyMat, windows, windowMat) {
+function createAutoBody(profile, bodyMat, windows, windowMat) {
     var body = new THREE.Object3D();
     var width = 10;
 
@@ -113,7 +105,8 @@ function createHatchback(color) {
 
     // Create the body, using the shapes.
     var bodyMat = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide});
-    var body = createBody(profile, bodyMat, [window1, window2, window3], windowMat);
+    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6, side: THREE.DoubleSide});
+    var body = createAutoBody(profile, bodyMat, [window1, window2, window3], windowMat);
     hatchback.add(body);
 
     // Add windshield.
@@ -169,7 +162,8 @@ function createSedan(color) {
 
     // Create the body, using the shapes.
     var bodyMat = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide});
-    var body = createBody(profile, bodyMat, [window1, window2], windowMat);
+    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6, side: THREE.DoubleSide});
+    var body = createAutoBody(profile, bodyMat, [window1, window2], windowMat);
     sedan.add(body);
 
     // Add windshield.
@@ -219,7 +213,8 @@ function createVan(color) {
 
     // Create the body, using the shapes.
     var bodyMat = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide});
-    var body = createBody(profile, bodyMat, [window1], windowMat);
+    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6, side: THREE.DoubleSide});
+    var body = createAutoBody(profile, bodyMat, [window1], windowMat);
     van.add(body);
 
     // Add windshield.
@@ -270,7 +265,8 @@ function createTruck(color, cargoColor) {
 
     // Create the body, using the shapes.
     var bodyMat = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide});
-    var body = createBody(profile, bodyMat, [window1], windowMat);
+    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6, side: THREE.DoubleSide});
+    var body = createAutoBody(profile, bodyMat, [window1], windowMat);
     truck.add(body);
 
     // Add windshield.
@@ -341,8 +337,9 @@ function createBus() {
     window4.lineTo(7, 3);
 
     // Create the body, using the shapes.
-    var bodyMat = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide});
-    var body = createBody(profile, bodyMat, [window1, window2, window3, window4], windowMat);
+    var bodyMat = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide});    
+    var windowMat = new THREE.MeshPhongMaterial({color: "#f2f2f2", transparent: true, opacity: 0.6, side: THREE.DoubleSide});
+    var body = createAutoBody(profile, bodyMat, [window1, window2, window3, window4], windowMat);
     bus.add(body);
 
     // Add windshield.
@@ -379,15 +376,4 @@ function createBus() {
     }
 
     return bus;
-}
-
-/* Return an array of different types of vehicles. */
-function createVehicles() {
-	var vehicles = [];
-    // vehicles.push(createHatchback("mediumorchid"));
-    // vehicles.push(createSedan("orange"));
-    // vehicles.push(createVan("turquoise"));
-    // vehicles.push(createTruck("chartreuse", "white"));
-    vehicles.push(createBus());
-    return vehicles;
 }
