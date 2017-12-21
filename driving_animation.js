@@ -18,8 +18,7 @@ function animateDriving(scene, vehicles, path) {
 	var end = 0.91; // end of the road
 	var spacing = 0.02; // distance in between vehicles
 	var count = 0.00; // global counter to trigger new vehicle when >= spacing
-	var delta_t = 0.0005; // how much to move each vehicle with every update
-	var interval = 50; // how often the vehicles get updated
+	var delta_t = 0.0004; // how much to move each vehicle with every update
 
 	/**
 	 * Given a parameter t (range [0,1]), place the given vehicle at the corresponding
@@ -29,7 +28,11 @@ function animateDriving(scene, vehicles, path) {
 		var point = path.getPoint(t);
 		var tangent = path.getTangent(t);
 		vehicle.position.set(point.x, 50 + 2, point.y); // clearance + road thickness
-		vehicle.rotation.y = -Math.atan(tangent.y/tangent.x);
+		if (tangent.x > 0) {
+			vehicle.rotation.y = -Math.atan(tangent.y/tangent.x);
+		} else {
+			vehicle.rotation.y = Math.PI - Math.atan(tangent.y/tangent.x);			
+		}
 	}
 		
 	/* Drive a vehicle forward along the road or remove it once it reaches the end). */
@@ -69,8 +72,9 @@ function animateDriving(scene, vehicles, path) {
 	scene.add(first);
 	first.t = front;
 
-	// Update the vehicles every interval.
-	setInterval(function() {
+	// Animate the vehicles!
+	function animate() {
+		requestAnimationFrame(animate);
 		count += delta_t;
 
 		// Animate all the vehicles that are on the road.
@@ -89,6 +93,7 @@ function animateDriving(scene, vehicles, path) {
 				next.t = front;
 				scene.add(next);
 			}
-		} 
-	}, interval); 
+		}
+	}
+	animate(); 
 }
